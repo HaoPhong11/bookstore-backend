@@ -18,8 +18,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @JsonIgnore
-    @Column(unique = true, nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String email;
     private String fullName;
