@@ -2,6 +2,7 @@ package com.example.bookstore_db.controller;
 
 import com.example.bookstore_db.dto.JwtResponse;
 import com.example.bookstore_db.dto.LoginRequest;
+import com.example.bookstore_db.dto.RegisterRequest;
 import com.example.bookstore_db.entity.User;
 import com.example.bookstore_db.repository.UserRepository;
 import com.example.bookstore_db.security.JwtTokenProvider;
@@ -41,20 +42,30 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        // Mã hóa mật khẩu trước khi lưu vào DB
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        // 1. Tạo đối tượng User thực thụ
+        User user = new User();
+        user.setUsername(request.getUsername());
+
+        // 2. Lấy password "nguyên thủy" (123) từ request, băm ra và nhét vào user
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
+
+        // 3. Lưu vào DB
         userRepository.save(user);
+
         return ResponseEntity.ok("Đăng ký thành công!");
     }
 
-    @RestController
-    @RequestMapping("/api/test")
-    public class TestController {
-
-        @GetMapping("/hello")
-        public ResponseEntity<String> sayHello() {
-            return ResponseEntity.ok("Nếu ông thấy dòng này, nghĩa là Token của ông xịn!");
-        }
-    }
+//    @RestController
+//    @RequestMapping("/api/test")
+//    public class TestController {
+//
+//        @GetMapping("/hello")
+//        public ResponseEntity<String> sayHello() {
+//            return ResponseEntity.ok("Nếu ông thấy dòng này, nghĩa là Token của ông xịn!");
+//        }
+//    }
 }
