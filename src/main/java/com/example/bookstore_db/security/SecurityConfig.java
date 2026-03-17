@@ -44,24 +44,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. TẮT CSRF - Cực kỳ quan trọng để Postman chạy được POST
+                // 1. PHẢI CÓ DÒNG NÀY: Để Spring dùng cái corsConfigurationSource ở trên của ông
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 2. TẮT CSRF
                 .csrf(csrf -> csrf.disable())
 
-                // 2. Cấu hình quyền truy cập
+                // 3. Cấu hình quyền truy cập
                 .authorizeHttpRequests(auth -> auth
-                        // Cho phép tất cả mọi người truy cập vào các link đăng ký, đăng nhập và tìm kiếm sách
                         .requestMatchers("/api/auth/**", "/api/books/**").permitAll()
-                        // Các yêu cầu khác thì mới cần login
                         .anyRequest().authenticated()
                 )
 
-                // 3. Quản lý Session là STATELESS (Vì mình dùng JWT)
+                // 4. Quản lý Session là STATELESS
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
-        // Thêm filter JWT của ông vào đây (nếu có)
-        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // 5. Thêm filter JWT (Nếu ông đã viết xong class này)
+        // http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
