@@ -19,6 +19,7 @@ public class User {
     private String username;
 
     @JsonIgnore
+    @Column(unique = true, nullable = false)
     private String password;
     private String email;
     private String fullName;
