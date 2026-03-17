@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: bookstore_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bookstore
+    ports:
+      - "3307:3306"
+
+  mailhog: # Server giả lập để test gửi mail
+    image: mailhog/mailhog
+    container_name: bookstore_mail
+    ports:
+      - "1025:1025" # Cổng SMTP cho Spring Boot
+      - "8025:8025" # Giao diện web để ông check mail đã gửi thành công chưa
