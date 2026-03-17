@@ -44,21 +44,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // 1. Cho phép các API xác thực
-                        .requestMatchers("/api/auth/**").permitAll()
+       http
+        // 1. TẮT CSRF - Cực kỳ quan trọng để Postman chạy được POST
+        .csrf(csrf -> csrf.disable()) 
+        
+        // 2. Cấu hình quyền truy cập
+        .authorizeHttpRequests(auth -> auth
+            // Cho phép tất cả mọi người truy cập vào các link đăng ký, đăng nhập và tìm kiếm sách
+            .requestMatchers("/api/auth/**", "/api/books/**").permitAll() 
+            // Các yêu cầu khác thì mới cần login
+            .anyRequest().authenticated()
+        )
+        
+        // 3. Quản lý Session là STATELESS (Vì mình dùng JWT)
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
 
-                        // 2. Mở cửa cho Swagger UI và API Docs
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+    // Thêm filter JWT của ông vào đây (nếu có)
+    // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-                        // 3. Các request còn lại mới bắt buộc đăng nhập
-                        .anyRequest().authenticated()
-                );
-
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+    return http.build();
     }
 }
