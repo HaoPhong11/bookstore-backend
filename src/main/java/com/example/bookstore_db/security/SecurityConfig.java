@@ -44,27 +44,27 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-      http
-        // 1. PHẢI CÓ DÒNG NÀY: Để Spring dùng cái corsConfigurationSource ở trên của ông
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        
-        // 2. TẮT CSRF
-        .csrf(csrf -> csrf.disable()) 
-        
-        // 3. Cấu hình quyền truy cập
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**", "/api/books/**").permitAll() 
-            .anyRequest().authenticated()
-        )
-        
-        // 4. Quản lý Session là STATELESS
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
-
-    // 5. Thêm filter JWT (Nếu ông đã viết xong class này)
-    // http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
+          http
+            // 1. PHẢI CÓ DÒNG NÀY: Để Spring dùng cái corsConfigurationSource ở trên của ông
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            
+            // 2. TẮT CSRF
+            .csrf(csrf -> csrf.disable()) 
+            
+            // 3. Cấu hình quyền truy cập
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**", "/api/books/**").permitAll() 
+                .anyRequest().authenticated()
+            )
+            
+            // 4. Quản lý Session là STATELESS
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
+    
+        // 5. Thêm filter JWT (Nếu ông đã viết xong class này)
+        // http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    
+            return http.build();
     }
 }
