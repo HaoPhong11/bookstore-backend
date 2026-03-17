@@ -53,7 +53,7 @@ public class SecurityConfig {
             
             // 3. Cấu hình quyền truy cập
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/books/**").permitAll() 
+                .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
             )
             
