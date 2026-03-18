@@ -1,10 +1,13 @@
 package com.example.bookstore_db.controller;
 
 
+import com.example.bookstore_db.dto.ChangePasswordRequest;
 import com.example.bookstore_db.entity.User;
 import com.example.bookstore_db.repository.UserRepository;
+import com.example.bookstore_db.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +18,8 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
     // Lấy thông tin 1 User
     @GetMapping("/{id}")
@@ -42,9 +47,23 @@ public class UserController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-//    // Thêm User mới
-//    @PostMapping
-//    public User createUser(@RequestBody User user) {
-//        return userRepository.save(user);
-//    }
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Kiểm tra mật khẩu mới và xác nhận mật khẩu có khớp nhau không
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            return ResponseEntity.badRequest().body("Mật khẩu mới không khớp!");
+        }
+
+        // Gọi Service để kiểm tra mật khẩu cũ và lưu mật khẩu mới (đã mã hóa BCrypt)
+        boolean success = userService.updatePassword(username, request.getOldPassword(), request.getNewPassword());
+
+        if (success) {
+            return ResponseEntity.ok("Đổi mật khẩu thành công!");
+        } else {
+            return ResponseEntity.badRequest().body("Mật khẩu cũ không chính xác!");
+        }
+    }
+
 }
