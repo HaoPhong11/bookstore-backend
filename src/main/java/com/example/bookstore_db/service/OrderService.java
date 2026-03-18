@@ -1,8 +1,9 @@
 package com.example.bookstore_db.service;
 
+import com.example.bookstore_db.dto.OrderDetailRequest;
 import com.example.bookstore_db.dto.OrderRequest;
 import com.example.bookstore_db.entity.Order;
-import com.example.bookstore_db.entity.OrderItem;
+import com.example.bookstore_db.entity.OrderDetail;
 import com.example.bookstore_db.entity.User;
 import com.example.bookstore_db.repository.OrderRepository;
 import com.example.bookstore_db.repository.UserRepository;
@@ -11,46 +12,56 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class OrderService {
-    @Autowired private OrderRepository orderRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private EmailService emailService;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Transactional
-    public Order createOrder(OrderRequest request, String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 1. Tạo đối tượng Order
+    public Order createOrder(OrderRequest dto) {
         Order order = new Order();
-        order.setUser(user);
-        order.setTotalAmount(request.getTotalAmount());
-        order.setOrderDate(LocalDateTime.now());
+
+        // Copy thông tin cơ bản từ DTO sang Entity
+        order.setUserId(dto.getUserId());
+        order.setSubTotal(dto.getSubTotal());
+        order.setShippingFee(dto.getShippingFee());
+        order.setDiscount(dto.getDiscount());
+        order.setTotalPrice(dto.getTotalPrice());
+
+        // Thông tin người nhận
+        order.setReceiverName(dto.getReceiverName());
+        order.setReceiverPhone(dto.getReceiverPhone());
+        order.setReceiverEmail(dto.getReceiverEmail());
+        order.setProvince(dto.getProvince());
+        order.setDistrict(dto.getDistrict());
+        order.setDetailedAddress(dto.getDetailedAddress());
+        order.setNote(dto.getNote());
+
+        // Trạng thái & Thanh toán
+        order.setPaymentMethod(dto.getPaymentMethod());
         order.setStatus("PENDING");
+        order.setCreatedAt(new Date());
 
-        // 2. Chuyển đổi từ DTO sang Entity OrderItem
-        List<OrderItem> orderItems = request.getItems().stream().map(itemDto -> {
-            OrderItem item = new OrderItem();
-            item.setOrder(order);
-            item.setGoogleBookId(itemDto.getGoogleBookId());
-            item.setBookTitle(itemDto.getTitle());
-            item.setThumbnailUrl(itemDto.getThumbnail());
-            item.setPriceAtPurchase(itemDto.getPrice());
-            item.setQuantity(itemDto.getQuantity());
-            return item;
-        }).toList();
+        // 4. Xử lý danh sách Sách (OrderDetail)
+        List<OrderDetail> items = new ArrayList<>();
+        if (dto.getItems() != null) {
+            for (OrderDetailRequest itemDto : dto.getItems()) {
+                OrderDetail item = new OrderDetail();
+                item.setBookId(itemDto.getBookId());
+                item.setQuantity(itemDto.getQuantity());
+                item.setPrice(itemDto.getPrice());
 
-        order.setOrderItems(orderItems);
+                item.setOrder(order);
+                items.add(item);
+            }
+        }
+        order.setOrderItems(items);
 
-        // 3. Lưu vào DB (Lưu Order sẽ tự lưu luôn OrderItems nhờ CascadeType.ALL)
-        Order savedOrder = orderRepository.save(order);
-
-        // 4. Gửi Mail xác nhận (chạy ngầm Async)
-        emailService.sendOrderConfirmation(user.getEmail(), user.getFullName(), savedOrder.getId(), savedOrder.getTotalAmount());
-
-        return savedOrder;
+        // 5. Lưu vào Database
+        return orderRepository.save(order);
     }
 }

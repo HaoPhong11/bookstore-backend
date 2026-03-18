@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,6 +20,8 @@ public class ReviewController {
 
     @Autowired
     private ReviewService reviewService;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @GetMapping("/{bookId}")
     public ResponseEntity<?> getReviews(@PathVariable String bookId) {
@@ -30,13 +31,44 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+//    // Khách hàng gửi 1 đánh giá mới
+//    @PostMapping
+//    public Review addReview(@RequestBody Review review) {
+//        return reviewRepository.save(review);
+//    }
+
+    // Lấy tất cả đánh giá của 1 cuốn sách
+    @GetMapping("/book/{bookId}")
+    public List<Review> getReviewsByBookId(@PathVariable String bookId) {
+        return reviewRepository.findByBookId(bookId);
+    }
+
+    // Sửa đánh giá
+    @PutMapping("/{id}")
+    public ResponseEntity<Review> updateReview(@PathVariable Long id, @RequestBody Review reviewDetails) {
+        return reviewRepository.findById(id).map(review -> {
+            review.setRating(reviewDetails.getRating());
+            review.setComment(reviewDetails.getComment());
+            Review updatedReview = reviewRepository.save(review);
+            return ResponseEntity.ok(updatedReview);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
-    public ResponseEntity<?> postReview(@RequestBody ReviewRequest request) {
+    public ResponseEntity<?> addReview(@RequestBody ReviewRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // Gọi Service xử lý, không cần gọi Repository ở đây nữa
+        // Gọi Service xử lý
         reviewService.saveReview(request, username);
 
         return ResponseEntity.ok("Đã đăng đánh giá thành công!");
     }
+
+    // API lấy điểm đánh giá trung bình của 1 cuốn sách
+    @GetMapping("/book/{bookId}/average-rating")
+    public ResponseEntity<Double> getAverageRating(@PathVariable String bookId) {
+        Double avgRating = reviewRepository.getAverageRatingByBookId(bookId);
+        return ResponseEntity.ok(avgRating != null ? avgRating : 0.0);
+    }
+
 }

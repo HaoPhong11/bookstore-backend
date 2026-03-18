@@ -19,7 +19,7 @@ public class ReviewService {
 
 
     public Double getAverageRating(String bookId) {
-        List<Review> reviews = reviewRepository.findByGoogleBookIdOrderByCreatedAtDesc(bookId);
+        List<Review> reviews = reviewRepository.findByBookIdOrderByCreatedAtDesc(bookId);
         if (reviews.isEmpty()) return 0.0;
         double sum = reviews.stream().mapToInt(Review::getRating).sum();
         return sum / reviews.size();
@@ -31,7 +31,7 @@ public class ReviewService {
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
         Review review = new Review();
-        review.setGoogleBookId(request.getGoogleBookId());
+        review.setBookId(request.getBookId());
         review.setRating(request.getRating());
         review.setComment(request.getComment());
         review.setUser(user);
@@ -41,7 +41,7 @@ public class ReviewService {
     }
 
     public List<ReviewResponse> getReviewsByBook(String bookId) {
-        List<Review> reviews = reviewRepository.findByGoogleBookIdOrderByCreatedAtDesc(bookId);
+        List<Review> reviews = reviewRepository.findByBookIdOrderByCreatedAtDesc(bookId);
 
         return reviews.stream().map(r -> new ReviewResponse(
                 r.getId(),

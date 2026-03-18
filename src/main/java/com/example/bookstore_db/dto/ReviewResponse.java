@@ -13,5 +13,5 @@ public class ReviewResponse {
     private String userName;   // Chỉ gửi tên, không gửi cả Object User
     private int rating;
     private String comment;
-    private String createdAt; // Để dạng String cho Android dễ hiện
+    private String createdAt;
 }

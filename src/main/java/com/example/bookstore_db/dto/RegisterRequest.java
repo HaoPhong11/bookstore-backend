@@ -8,8 +8,11 @@ public class RegisterRequest {
     private String password;
     private String email;
     private String fullName;
+    private String phoneNumber;
+    private String address;
 
-    // Phải có Getters và Setters thì Spring Boot mới đọc được JSON nhé
+    public RegisterRequest() {
+    }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 

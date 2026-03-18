@@ -59,13 +59,4 @@ public class AuthController {
         return ResponseEntity.ok("Đăng ký thành công!");
     }
 
-//    @RestController
-//    @RequestMapping("/api/test")
-//    public class TestController {
-//
-//        @GetMapping("/hello")
-//        public ResponseEntity<String> sayHello() {
-//            return ResponseEntity.ok("Nếu ông thấy dòng này, nghĩa là Token của ông xịn!");
-//        }
-//    }
 }
