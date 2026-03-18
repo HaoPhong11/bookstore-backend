@@ -56,6 +56,10 @@ public class UserController {
             return ResponseEntity.badRequest().body("Mật khẩu mới không khớp!");
         }
 
+        if (request.getNewPassword().equals(request.getOldPassword())) {
+            return ResponseEntity.badRequest().body("Mật khẩu mới phải khác mật khẩu cũ!");
+        }
+
         // Gọi Service để kiểm tra mật khẩu cũ và lưu mật khẩu mới (đã mã hóa BCrypt)
         boolean success = userService.updatePassword(username, request.getOldPassword(), request.getNewPassword());
 
