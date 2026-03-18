@@ -27,11 +27,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        // 1. Tìm user
+        //  Tìm user
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
 
-        // 2. Kiểm tra mật khẩu (Sử dụng matches của BCrypt)
+        //  Kiểm tra mật khẩu (Sử dụng matches của BCrypt)
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             // 3. Tạo Token
             String jwt = tokenProvider.generateToken(user.getUsername());
@@ -43,17 +43,15 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
-        // 1. Tạo đối tượng User thực thụ
         User user = new User();
         user.setUsername(request.getUsername());
-
-        // 2. Lấy password "nguyên thủy" (123) từ request, băm ra và nhét vào user
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setAddress(request.getAddress());
 
-        // 3. Lưu vào DB
+        // Lưu vào DB
         userRepository.save(user);
 
         return ResponseEntity.ok("Đăng ký thành công!");
