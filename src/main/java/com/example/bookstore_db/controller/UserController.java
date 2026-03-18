@@ -52,6 +52,11 @@ public class UserController {
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        if (request.getOldPassword() == null || request.getOldPassword().isBlank() ||
+                request.getNewPassword() == null || request.getNewPassword().isBlank()) {
+            return ResponseEntity.badRequest().body("Vui lòng nhập đầy đủ mật khẩu cũ và mới!");
+        }
+
         if (request.getNewPassword().equals(request.getOldPassword())) {
             return ResponseEntity.badRequest().body("Mật khẩu mới phải khác mật khẩu cũ!");
         }
