@@ -52,13 +52,13 @@ public class UserController {
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        if (request.getNewPassword().equals(request.getOldPassword())) {
+            return ResponseEntity.badRequest().body("Mật khẩu mới phải khác mật khẩu cũ!");
+        }
+
         // Kiểm tra mật khẩu mới và xác nhận mật khẩu có khớp nhau không
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             return ResponseEntity.badRequest().body("Mật khẩu mới không khớp!");
-        }
-
-        if (request.getNewPassword().equals(request.getOldPassword())) {
-            return ResponseEntity.badRequest().body("Mật khẩu mới phải khác mật khẩu cũ!");
         }
 
         // Gọi Service để kiểm tra mật khẩu cũ và lưu mật khẩu mới (đã mã hóa BCrypt)
