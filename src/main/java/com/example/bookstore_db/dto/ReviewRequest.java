@@ -3,16 +3,16 @@ import lombok.Data;
 
 @Data
 public class ReviewRequest {
-    private String BookId;
+    private String bookId;
     private int rating; // từ 1 đến 5
     private String comment;
 
     public String getBookId() {
-        return BookId;
+        return bookId;
     }
 
     public void setBookId(String bookId) {
-        BookId = bookId;
+        bookId = bookId;
     }
 
     public int getRating() {
