@@ -7,6 +7,24 @@ public class OrderDetailRequest {
     private String bookId;
     private Integer quantity;
     private Double price;
+    private String imgUrl;
+    private String bookTitle;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
 
     public String getBookId() {
         return bookId;

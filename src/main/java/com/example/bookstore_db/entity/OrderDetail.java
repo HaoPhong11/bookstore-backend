@@ -22,7 +22,8 @@ public class OrderDetail {
     private String bookId;   // ID của cuốn sách (lấy từ Google Books)
     private Integer quantity; // Số lượng cuốn này khách mua
     private Double price;
-
+    private String bookTitle;
+    private String imgUrl;
     public Long getId() {
         return id;
     }

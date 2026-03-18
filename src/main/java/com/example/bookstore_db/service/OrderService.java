@@ -54,7 +54,8 @@ public class OrderService {
                 item.setBookId(itemDto.getBookId());
                 item.setQuantity(itemDto.getQuantity());
                 item.setPrice(itemDto.getPrice());
-
+                item.setBookTitle(itemDto.getBookTitle());
+                item.setImgUrl(itemDto.getImgUrl());
                 item.setOrder(order);
                 items.add(item);
             }
