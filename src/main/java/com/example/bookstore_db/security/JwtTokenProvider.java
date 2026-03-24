@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-    private final String JWT_SECRET = "abc123abc123abc123abc123abc123abc123abc123"; //7 lan abc123
+    private final String JWT_SECRET = " "; 
     private final long JWT_EXPIRATION = 604800000L; // 7 ngày
 
     // Tạo token từ thông tin User
