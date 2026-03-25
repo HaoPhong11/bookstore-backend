@@ -8,8 +8,9 @@ import lombok.Data;
 public class JwtResponse {
     private String accessToken;
     private String tokenType = "Bearer";
-
-    public JwtResponse(String accessToken) {
+    private Long id;
+    public JwtResponse(String accessToken, Long id) {
         this.accessToken = accessToken;
+        this.id = id;
     }
 }

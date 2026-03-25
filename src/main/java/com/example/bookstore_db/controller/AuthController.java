@@ -31,11 +31,14 @@ public class AuthController {
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
 
-        //  Kiểm tra mật khẩu (Sử dụng matches của BCrypt)
+        //  Kiểm tra mật khẩu
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             // 3. Tạo Token
             String jwt = tokenProvider.generateToken(user.getUsername());
-            return ResponseEntity.ok(new JwtResponse(jwt));
+            return ResponseEntity.ok(new JwtResponse(
+                    jwt,
+                    user.getId()
+            ));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai mật khẩu rồi fen ơi!");
