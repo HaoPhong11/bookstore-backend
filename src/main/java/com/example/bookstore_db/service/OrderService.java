@@ -55,7 +55,9 @@ public class OrderService {
                 item.setQuantity(itemDto.getQuantity());
                 item.setPrice(itemDto.getPrice());
                 item.setBookTitle(itemDto.getBookTitle());
-                item.setImgUrl(itemDto.getImgUrl());
+                // Truncate imgUrl tránh vượt quá VARCHAR(255) — Google Books URL có thể dài ~270+ ký tự
+                String rawUrl = itemDto.getImgUrl();
+                item.setImgUrl(rawUrl != null && rawUrl.length() > 255 ? null : rawUrl);
                 item.setOrder(order);
                 items.add(item);
             }

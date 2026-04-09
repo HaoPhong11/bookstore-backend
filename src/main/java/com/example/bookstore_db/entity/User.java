@@ -28,6 +28,12 @@ public class User {
     @Column(name = "address", columnDefinition = "TEXT")
     private String address;
 
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "district")
+    private String district;
+
     private String email;
     private String fullName;
 
@@ -69,6 +75,22 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
     public String getEmail() {

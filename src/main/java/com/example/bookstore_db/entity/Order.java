@@ -1,6 +1,8 @@
 package com.example.bookstore_db.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -37,9 +39,11 @@ public class Order {
     private String status;        // PENDING, PROCESSING, SHIPPED, CANCELLED
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date createdAt;       // Thời gian đặt hàng
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonProperty("items")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderDetail> orderItems;
 
     public Long getId() {
@@ -170,6 +174,7 @@ public class Order {
         this.createdAt = createdAt;
     }
 
+    @JsonProperty("items")
     public List<OrderDetail> getOrderItems() {
         return orderItems;
     }

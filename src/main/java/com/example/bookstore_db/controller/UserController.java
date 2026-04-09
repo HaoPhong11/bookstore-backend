@@ -2,6 +2,8 @@ package com.example.bookstore_db.controller;
 
 
 import com.example.bookstore_db.dto.ChangePasswordRequest;
+import com.example.bookstore_db.dto.UserRequest;
+import com.example.bookstore_db.dto.UserResponse;
 import com.example.bookstore_db.entity.User;
 import com.example.bookstore_db.repository.UserRepository;
 import com.example.bookstore_db.service.UserService;
@@ -23,29 +25,48 @@ public class UserController {
 
     // Lấy thông tin 1 User
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return userRepository.findById(id)
+                .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // Lấy danh sách tất cả User
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     // Cập nhật thông tin User
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserRequest userDetails) {
         return userRepository.findById(id).map(user -> {
             user.setFullName(userDetails.getFullName());
             user.setPhoneNumber(userDetails.getPhoneNumber());
             user.setAddress(userDetails.getAddress());
             user.setEmail(userDetails.getEmail());
+            user.setProvince(userDetails.getProvince());
+            user.setDistrict(userDetails.getDistrict());
             User updatedUser = userRepository.save(user);
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(toResponse(updatedUser));
         }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // Helper: chuyển User entity → UserResponse
+    private UserResponse toResponse(User user) {
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getFullName(),
+                user.getPhoneNumber(),
+                user.getEmail(),
+                user.getAddress(),
+                user.getProvince(),
+                user.getDistrict()
+        );
     }
 
     @PostMapping("/change-password")

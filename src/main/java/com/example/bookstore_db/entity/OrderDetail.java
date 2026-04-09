@@ -23,6 +23,8 @@ public class OrderDetail {
     private Integer quantity; // Số lượng cuốn này khách mua
     private Double price;
     private String bookTitle;
+
+    @Column(columnDefinition = "TEXT")   // URL ảnh Google Books có thể > 255 ký tự
     private String imgUrl;
     public Long getId() {
         return id;
